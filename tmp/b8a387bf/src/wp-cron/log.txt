@@ -1,0 +1,87 @@
+1338776217 - 	ID			=>	66
+	post_author			=>	1
+	post_date			=>	2012-11-04 02:15:27
+	post_date_gmt			=>	2012-11-04 02:15:27
+	post_content			=>	a;ldkfj
+	post_title			=>	a;dlkfsj
+	post_excerpt			=>	
+	post_status			=>	future
+	comment_status			=>	open
+	ping_status			=>	open
+	post_password			=>	
+	post_name			=>	adlkfsj
+	to_ping			=>	
+	pinged			=>	
+	post_modified			=>	2012-06-04 02:16:57
+	post_modified_gmt			=>	2012-06-04 02:16:57
+	post_content_filtered			=>	
+	post_parent			=>	0
+	guid			=>	http://wp_cron.loc/3.3/?p=66
+	menu_order			=>	0
+	post_type			=>	post
+	post_mime_type			=>	
+	comment_count			=>	0
+	ancestors			=>	Array
+	filter			=>	raw
+
+1338776217 - sending post for 2012-11-04 02:15:27
+1338776217 - response => 
+
+1338776275 - 	ID			=>	66
+	post_author			=>	1
+	post_date			=>	2012-11-04 02:15:27
+	post_date_gmt			=>	2012-11-04 02:15:27
+	post_content			=>	a;ldkfj
+	post_title			=>	a;dlkfsj
+	post_excerpt			=>	
+	post_status			=>	future
+	comment_status			=>	open
+	ping_status			=>	open
+	post_password			=>	
+	post_name			=>	adlkfsj
+	to_ping			=>	
+	pinged			=>	
+	post_modified			=>	2012-06-04 02:17:55
+	post_modified_gmt			=>	2012-06-04 02:17:55
+	post_content_filtered			=>	
+	post_parent			=>	0
+	guid			=>	http://wp_cron.loc/3.3/?p=66
+	menu_order			=>	0
+	post_type			=>	post
+	post_mime_type			=>	
+	comment_count			=>	0
+	ancestors			=>	Array
+	filter			=>	raw
+
+1338776275 - sending post for 2012-11-04 02:15:27
+1338776275 - response => 
+
+1338776301 - 	ID			=>	66
+	post_author			=>	1
+	post_date			=>	2012-11-04 02:15:27
+	post_date_gmt			=>	2012-11-04 02:15:27
+	post_content			=>	a;ldkfj
+	post_title			=>	a;dlkfsj
+	post_excerpt			=>	
+	post_status			=>	future
+	comment_status			=>	open
+	ping_status			=>	open
+	post_password			=>	
+	post_name			=>	adlkfsj
+	to_ping			=>	
+	pinged			=>	
+	post_modified			=>	2012-06-04 02:18:21
+	post_modified_gmt			=>	2012-06-04 02:18:21
+	post_content_filtered			=>	
+	post_parent			=>	0
+	guid			=>	http://wp_cron.loc/3.3/?p=66
+	menu_order			=>	0
+	post_type			=>	post
+	post_mime_type			=>	
+	comment_count			=>	0
+	ancestors			=>	Array
+	filter			=>	raw
+
+1338776301 - sending post for 2012-11-04 02:15:27
+1338776301 - response => 
+Invalid details.
