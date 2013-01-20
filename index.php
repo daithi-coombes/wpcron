@@ -43,6 +43,15 @@ define('WPCRON_URL', 'http://wp_cron.loc/ccc');
 
 //includes
 require_once( WPCRON_DIR .'/application/includes/debug.func.php');
+require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
+
+/**
+ * Set up logger?
+ */
+Logger::configure( WPCRON_DIR . '/application/includes/Log4php.config.xml');
+$logger = Logger::getLogger("main");
+$logger->warn("this is a warning");
+
 
 /**
  * actions
@@ -59,6 +68,8 @@ add_action('save_post', 'wpcron_check_post', 10, 2);
  */
 function wpcron_check_post($postID, $post) {
 
+	wpcron_log("Checking post {$postID}..");
+	
 	/**
 	 * make sure post is for future and not revision etc.
 	 */
