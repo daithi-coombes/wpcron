@@ -33,7 +33,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'on');
 
 //globals
-$wp_cron_ccc_server = "http://wp_cron.loc/ccc/setAlarm.php";
+$wp_cron_ccc_server = "http://wp-cron.loc/ccc/setAlarm.php";
 $wp_cron_key = "0akjdfha659374jsdfl732ol87fkLJH87LLSfjhLH";
 
 //constants
@@ -50,8 +50,7 @@ require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.ph
  */
 Logger::configure( WPCRON_DIR . '/application/includes/Log4php.config.xml');
 $logger = Logger::getLogger("main");
-$logger->warn("this is a warning");
-
+wpcron_log("Script started");
 
 /**
  * actions
@@ -100,6 +99,10 @@ function wpcron_check_post($postID, $post) {
  */
 function wpcron_log($str) {
 
+	global $logger;
+	$logger->info($str);
+	return;
+	
 	$log = WPCRON_DIR . "/log.txt";
 	$fp = fopen($log, "a+");
 	fwrite($fp, time() . " - {$str}\n");
@@ -116,10 +119,6 @@ function wpcron_ccc_send( $date ) {
 
 	if(empty($date)) return;
 	
-	/**
-	 * Logging
-	 * @deprecated
-	 */
 	wpcron_log("sending post for {$date}");
 	
 	/**
@@ -130,6 +129,14 @@ function wpcron_ccc_send( $date ) {
 	$blog = get_bloginfo('wpurl');
 	$now = time();
 	$ch = curl_init($wp_cron_ccc_server);
+	
+	$res = wp_remote_post($wp_cron_ccc_server, array(
+		'blog' => $blog,
+		'now' => $now,
+		'alarm' => $date,
+		'key' => $key
+	));
+	wpcron_log($res);
 	
 	/**
 	 * send request
