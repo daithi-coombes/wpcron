@@ -4,13 +4,13 @@
   Plugin Name: Wordpress Cron
   Plugin URI: http://david-coombes.com
   Description: Automatically run cron jobs
-  Author: David Coombes
+  Author: Daithi Coombes
   Version: 0.1
   Author URI: http://david-coombes.com
  */
 
 /**
- * The CCC (Control Command Center) hits a page in this plugin (hit.php) This 
+ * The CCC (Control Command Center) hits admin-ajax.php This 
  * page then requests the homepage using phpCurl which thus triggers the 
  * wordpress crons and scheduled posts. To ensure that the scheduled posts are 
  * definitely sent the hit.php page should be called once every 10 mins after 
@@ -18,7 +18,7 @@
  * 
  * The reason the CCC doesn't directly hit the homepage is to save bandwidth.
  * Hitting the homepage will mean download the page to the CCC, where as hitting
- * the hit.php page on the target server means the bandwidth is put on the cust.
+ * the admin-ajax.php allows wpcron to run checks to make sure post went out.
  * 
  * Scheduled Post's
  * 		plugin hooks into wordpress posts. When a post is set for a future date
