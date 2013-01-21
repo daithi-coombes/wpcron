@@ -157,6 +157,7 @@ class wp_auto_update {
 				$this->update_path,
 				$this->update_path);
 		$args['body']['plugin'] = $plugin->toArray();
+		$args['body']['blog'] = site_url();
 		$args['body']['key'] = WPCRON_CUSTOMER_KEY;
 		return wp_remote_post($url, $args);
 	}
