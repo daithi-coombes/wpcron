@@ -15,6 +15,12 @@ class wp_auto_update {
 	public $update_path;
 
 	/**
+	 * Additional params to be sent with requests in param name=>value pairs
+	 * @var array
+	 */
+	public $params;
+	
+	/**
 	 * Plugin Slug (plugin_directory/plugin_file.php)
 	 * @var string
 	 */
@@ -32,7 +38,7 @@ class wp_auto_update {
 	 * @param string $update_path
 	 * @param string $plugin_slug
 	 */
-	function __construct($current_version, $update_path, $plugin_slug) {
+	function __construct($current_version, $update_path, $plugin_slug, $params=array()) {
 		// Set the class public variables
 		$this->current_version = $current_version;
 		$this->update_path = $update_path;
@@ -60,9 +66,17 @@ class wp_auto_update {
 
 		// Get the remote version
 		$remote_version = $this->getRemote_version();
-
+		
 		// If a newer version is available, add the update
 		if (version_compare($this->current_version, $remote_version, '<')) {
+			$plugin = new WPCronPlugin(
+					$this->slug,
+					$remote_version,
+					$this->update_path,
+					$this->update_path);
+			/**
+			 * @deprecated
+			 */
 			$obj = new stdClass();
 			$obj->slug = $this->slug;
 			$obj->new_version = $remote_version;
@@ -70,7 +84,6 @@ class wp_auto_update {
 			$obj->package = $this->update_path;
 			$transient->response[$this->plugin_slug] = $obj;
 		}
-		var_dump($transient);
 		return $transient;
 	}
 
@@ -95,7 +108,8 @@ class wp_auto_update {
 	 * @return string $remote_version
 	 */
 	public function getRemote_version() {
-		$request = wp_remote_post($this->update_path, array('body' => array('action' => 'version')));
+		//$request = wp_remote_post($this->update_path, array('body' => array('action' => 'version')));
+		$request = $this->post($this->update_path, array('body' => array('action' => 'version')));
 		if (!is_wp_error($request) || wp_remote_retrieve_response_code($request) === 200) {
 			return $request['body'];
 		}
@@ -107,7 +121,8 @@ class wp_auto_update {
 	 * @return bool|object
 	 */
 	public function getRemote_information() {
-		$request = wp_remote_post($this->update_path, array('body' => array('action' => 'info')));
+		//$request = wp_remote_post($this->update_path, array('body' => array('action' => 'info')));
+		$request = $this->post($this->update_path, array('body' => array('action' => 'info')));
 		if (!is_wp_error($request) || wp_remote_retrieve_response_code($request) === 200) {
 			return unserialize($request['body']);
 		}
@@ -119,11 +134,58 @@ class wp_auto_update {
 	 * @return boolean $remote_license
 	 */
 	public function getRemote_license() {
-		$request = wp_remote_post($this->update_path, array('body' => array('action' => 'license')));
+		//$request = wp_remote_post($this->update_path, array('body' => array('action' => 'license')));
+		$request = $this->post($this->update_path, array('body' => array('action' => 'license')));
 		if (!is_wp_error($request) || wp_remote_retrieve_response_code($request) === 200) {
 			return $request['body'];
 		}
 		return false;
 	}
+	
+	/**
+	 * Set the current additional params to be sent to the server
+	 * @param array $params 
+	 */
+	public function setParams( array $params ){
+		$this->params = array_merge($this->params, $params);
+	}
+	
+	protected function post( $url, $args ){
+		$plugin = WPCronPlugin::getPlugin(
+				$this->slug,
+				$this->current_version,
+				$this->update_path,
+				$this->update_path);
+		$args['body']['plugin'] = $plugin->toArray();
+		$args['body']['key'] = WPCRON_CUSTOMER_KEY;
+		return wp_remote_post($url, $args);
+	}
 
+}
+
+
+class WPCronPlugin{
+	
+	public $slug;
+	public $new_version;
+	public $url;
+	public $package;
+	
+	function __construct($slug, $remote_version, $url, $package){
+		$this->slug = $slug;
+		$this->new_version = $remote_version;
+		$this->url = $url;
+		$this->package = $package;
+	}
+	
+	public function toArray(){
+		$res = array();
+		foreach(get_object_vars($this) as $key=>$val)
+			$res[$key] = $val;
+		return $res;
+	}
+	
+	static function getPlugin($slug, $remote_version, $url, $package){
+		return new WPCronPlugin($slug, $remote_version, $url, $package);
+	}
 }

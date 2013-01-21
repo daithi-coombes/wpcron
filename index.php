@@ -33,7 +33,7 @@ ini_set('display_errors', 'on');
 
 //globals
 $wp_cron_ccc_server = "http://wp-cron.loc/ccc/setAlarm.php";
-$wp_cron_key = "0akjdfha659374jsdfl732ol87fkLJH87LLSfjhLH";
+define('WPCRON_CUSTOMER_KEY', "0akjdfha659374jsdfl732ol87fkLJH87LLSfjhLH");
 
 //constants
 define('WPCRON_DIR', dirname(__FILE__));
