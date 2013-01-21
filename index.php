@@ -49,7 +49,7 @@ require_once( WPCRON_DIR .'/application/includes/debug.func.php');
  */
 if(!class_exists("Logger"))
 	require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
-Logger::configure( WPCRON_DIR . '/application/includes/Log4php.config.xml');
+Logger::configure( WPCRON_DIR . '/Log4php.config.xml');
 $logger = Logger::getLogger("wp-cron");
 wpcron_log("Script started");
 
