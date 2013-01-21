@@ -1,5 +1,4 @@
 <?php
-
 /*
   Plugin Name: Wordpress Cron
   Plugin URI: http://david-coombes.com
@@ -43,19 +42,66 @@ define('WPCRON_URL', 'http://wp_cron.loc/ccc');
 
 //includes
 require_once( WPCRON_DIR .'/application/includes/debug.func.php');
-require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
 
 /**
  * Set up logger?
  */
+if(!class_exists("Logger"))
+	require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
 Logger::configure( WPCRON_DIR . '/application/includes/Log4php.config.xml');
-$logger = Logger::getLogger("main");
+$logger = Logger::getLogger("wp-cron");
 wpcron_log("Script started");
 
 /**
  * actions
  */
 add_action('save_post', 'wpcron_check_post', 10, 2);
+add_action('wp_ajax_wpcron_alarm', 'wpcron_alarm');
+add_action('wp_ajax_nopriv_wpcron_alarm', 'wpcron_alarm');
+add_action('init', 'wpcron_activate_au');
+function wpcron_activate_au()
+{
+	require_once(WPCRON_DIR . '/application/includes/wp_autoupdate.php');
+	$version = '1.0';
+	$update_server = 'http://wp-cron.loc/wp-admin/admin-ajax.php?' . http_build_query(array(
+		'action' => 'wpdownload_update'
+	));
+	$plugin_slug = plugin_basename(__FILE__);
+	new wp_auto_update ($version, $update_server, $plugin_slug);
+}
+
+/**
+ * Ajax Callback. Alarm Request.
+ * 
+ * This callback gets called when an alarm is requested from the Central
+ * Command Center. Will make request to block homepage to try activate
+ * scheduled posts, will then check that the post status values in the db are
+ * set correctly, will return json.
+ * @return json Prints json result and dies() 
+ */
+function wpcron_alarm(){
+	wpcron_log("Alarm requested:");
+	
+	/**
+	 * Security 
+	 */
+	if($_REQUEST['key']!=$key)
+		die( json_encode(array('error'=>'Invalid Key')));
+	
+	//get home page
+	$res = wp_remote_get( get_bloginfo('wpurl') );
+	wpcron_log("Made touch at ".time());
+	wpcron_log($res);
+	
+	//check for error
+	if($res['code']!='200')
+		die( json_encode(array('error'=>'Can\'t ping homepage','data'=>$res)) );
+	
+	//check db for scheduled posts
+	
+	//return true
+	die( json_encode(array('ok'=>true,'data'=>$res)));
+}
 
 /**
  * Hook for checking all posts, if post is set for the future then
@@ -126,30 +172,33 @@ function wpcron_ccc_send( $date ) {
 	 */
 	global $wp_cron_key;
 	global $wp_cron_ccc_server;
-	$blog = get_bloginfo('wpurl');
+	$blog = admin_url('admin-ajax.php') . "?action=wpcron_alarm";
+	$gmt_offset = get_option('gmt_offset');
 	$now = time();
-	$ch = curl_init($wp_cron_ccc_server);
-	
-	$res = wp_remote_post($wp_cron_ccc_server, array(
-		'blog' => $blog,
-		'now' => $now,
-		'alarm' => $date,
-		'key' => $key
-	));
-	wpcron_log($res);
+	$timezone_string = get_option('timezone_string');
 	
 	/**
-	 * send request
+	 * Send request 
 	 */
+	$http = new WP_Http();
+	$params = array(
+		'blog' => $blog,
+		'logged' => $now,
+		'gmt_offset' => $gmt_offset,
+		'timezone_string' => $timezone_string,
+		'alarm' => $date,
+		'key' => $wp_cron_key
+	);
+	wpcron_log($params);
+	/**
+	 * send request
+	 * @deprecated use wp_remote_post instead
+	 */
+	$ch = curl_init($wp_cron_ccc_server);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_POST, 1);
-	$data = array(
-		'blog' => $blog,
-		'now' => $now,
-		'alarm' => $date,
-		'key' => $key
-	);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+	curl_setopt($ch, CURLOPT_VERBOSE, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
 	$output = curl_exec($ch);
 	$info = curl_getinfo($ch);
 	wpcron_log("response => \n" . $output);
