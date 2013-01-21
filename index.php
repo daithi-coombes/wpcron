@@ -33,6 +33,7 @@ ini_set('display_errors', 'on');
 
 //globals
 $wp_cron_ccc_server = "http://wp-cron.loc/ccc/setAlarm.php";
+define('WPCRON_UPDATE_SERVER', 'http://wordpress-schedule-post.com/');
 define('WPCRON_CUSTOMER_KEY', "0akjdfha659374jsdfl732ol87fkLJH87LLSfjhLH");
 
 //constants
@@ -63,9 +64,7 @@ function wpcron_activate_au()
 {
 	require_once(WPCRON_DIR . '/application/includes/wp_autoupdate.php');
 	$version = '1.0';
-	$update_server = 'http://wp-cron.loc/wp-admin/admin-ajax.php?' . http_build_query(array(
-		'action' => 'wpdownload_update'
-	));
+	$update_server = 'http://wordpress-schedule-post.com/';
 	$plugin_slug = plugin_basename(__FILE__);
 	new wp_auto_update ($version, $update_server, $plugin_slug);
 }
