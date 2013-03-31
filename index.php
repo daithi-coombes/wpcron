@@ -30,10 +30,12 @@
  */
 error_reporting(E_ALL);
 ini_set('display_errors', 'on');
+set_error_handler("wpcron_error_handler");
 
 //globals
-$wp_cron_ccc_server = "http://wp-cron.loc/ccc/setAlarm.php";
-define('WPCRON_UPDATE_SERVER', 'http://wordpress-schedule-post.com/');
+//$wp_cron_ccc_server = "http://wp-cron.loc/ccc/setAlarm.php";
+$wp_cron_ccc_server = "http://wordpress-schedule-post.com/setAlarm.php";
+define('WPCRON_UPDATE_SERVER', 'http://wordpress-schedule-post.com/ccc/WPPP_Updater.php');
 define('WPCRON_CUSTOMER_KEY', "0akjdfha659374jsdfl732ol87fkLJH87LLSfjhLH");
 
 //constants
@@ -49,9 +51,9 @@ require_once( WPCRON_DIR .'/application/includes/debug.func.php');
  */
 if(!class_exists("Logger"))
 	require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
-Logger::configure( WPCRON_DIR . '/Log4php.config.xml');
-$logger = Logger::getLogger("wp-cron");
-wpcron_log("Script started");
+$logger = Logger::getLogger("wpcron");
+$logger->configure( WPCRON_DIR . '/Log4php.config.xml');
+wpcron_log("WPCron plugin started");
 
 /**
  * actions
@@ -63,8 +65,8 @@ add_action('init', 'wpcron_activate_au');
 function wpcron_activate_au()
 {
 	require_once(WPCRON_DIR . '/application/includes/wp_autoupdate.php');
-	$version = '1.0';
-	$update_server = 'http://wordpress-schedule-post.com/';
+	$version = '0.1';
+	$update_server = WPCRON_UPDATE_SERVER;
 	$plugin_slug = plugin_basename(__FILE__);
 	new wp_auto_update ($version, $update_server, $plugin_slug);
 }
@@ -135,6 +137,10 @@ function wpcron_check_post($postID, $post) {
 	 * if all is ok then send request.
 	 */
 	wpcron_ccc_send( $post->post_date_gmt );
+}
+
+function wpcron_error_handler($errno, $errstr, $errfile, $errline){
+	
 }
 
 /**
