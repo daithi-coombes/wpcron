@@ -51,6 +51,7 @@ require_once( WPCRON_DIR .'/application/includes/debug.func.php');
  */
 if(!class_exists("Logger"))
 	require_once( WPCRON_DIR . '/application/includes/apache-log4php-2.3.0/Logger.php');
+global $logger;
 $logger = Logger::getLogger("wpcron");
 $logger->configure( WPCRON_DIR . '/Log4php.config.xml');
 wpcron_log("WPCron plugin started");
